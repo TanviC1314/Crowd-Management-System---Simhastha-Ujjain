@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crowd Management System - Simhastha Ujjain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #1a2233;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #4a90e2;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        header {
+            background-color: var(--bg-secondary);
+            color: var(--accent);
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 2rem;
+        }
+        h1, h2 {
+            margin: 0;
+            text-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+        }
+        h1 {
+            font-size: 2.5rem;
+        }
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(74, 144, 226, 0.2);
+        }
+        .stats {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin: 0.5rem 0;
+        }
+        .density-map {
+            width: 100%;
+            height: 300px;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--accent);
+            margin-top: 1.5rem;
+        }
+        .person-dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            opacity: 0.7;
+            transition: all 1s ease-in-out;
+        }
+        .image-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            aspect-ratio: 1;
+        }
+        .image-container:hover {
+            transform: scale(1.05);
+        }
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+        }
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+            max-height: 80%;
+            animation: zoom 0.6s;
+        }
+        @keyframes zoom {
+            from {transform:scale(0)} 
+            to {transform:scale(1)}
+        }
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: var(--text-primary);
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .close:hover,
+        .close:focus {
+            color: var(--accent);
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .upload-btn {
+            display: inline-block;
+            background-color: var(--accent);
+            color: var(--bg-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .upload-btn:hover {
+            background-color: #3a7bc8;
+        }
+        #imageUpload {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Crowd Management System - Simhastha Ujjain</h1>
+    </header>
+    <div class="container">
+        <div class="dashboard">
+            <div class="card">
+                <h2>Total Visitors</h2>
+                <div class="stats" id="visitorCount">0</div>
+            </div>
+            <div class="card">
+                <h2>Active Queues</h2>
+                <div class="stats" id="queueCount">0</div>
+            </div>
+            <div class="card">
+                <h2>Missing Persons</h2>
+                <div class="stats" id="missingCount">0</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Image Analysis</h2>
+            <div class="image-section" id="imageSection"></div>
+            <input type="file" id="imageUpload" accept="image/*" multiple>
+            <label for="imageUpload" class="upload-btn">Upload Images</label>
+        </div>
+        <br>
+        <div class="card">
+            <h2>Crowd Density Map</h2>
+            <div class="density-map" id="densityMap"></div>
+        </div>
+    </div>
+
+    <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+        const images = [
+            "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-E5e9NaqqpGiQt1lH6d8c5eUTbr1tAQ.png"
+        ];
+        let totalPeople = 0;
+
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function updateDashboard() {
+            document.getElementById("visitorCount").textContent = totalPeople;
+            document.getElementById("queueCount").textContent = Math.ceil(totalPeople / 100);
+            document.getElementById("missingCount").textContent = Math.floor(totalPeople * 0.001);
+            
+            updateDensityMap();
+        }
+
+        function updateImageSection() {
+            const imageSection = document.getElementById("imageSection");
+            imageSection.innerHTML = '';
+            images.forEach((src, index) => {
+                const container = document.createElement("div");
+                container.className = "image-container";
+                const img = document.createElement("img");
+                img.src = src;
+                img.alt = `Crowd Image ${index + 1}`;
+                img.onclick = () => openModal(src);
+                container.appendChild(img);
+                imageSection.appendChild(container);
+            });
+        }
+
+        function updateDensityMap() {
+            const densityMap = document.getElementById("densityMap");
+            densityMap.innerHTML = '';
+            for (let i = 0; i < totalPeople; i++) {
+                const dot = document.createElement("div");
+                dot.className = "person-dot";
+                dot.style.left = `${Math.random() * 100}%`;
+                dot.style.top = `${Math.random() * 100}%`;
+                densityMap.appendChild(dot);
+            }
+        }
+
+        function animateDots() {
+            const dots = document.querySelectorAll('.person-dot');
+            dots.forEach(dot => {
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                dot.style.left = `${x}%`;
+                dot.style.top = `${y}%`;
+            });
+        }
+
+        function openModal(src) {
+            const modal = document.getElementById("imageModal");
+            const modalImg = document.getElementById("modalImage");
+            modal.style.display = "block";
+            modalImg.src = src;
+        }
+
+        document.querySelector(".close").onclick = function() {
+            document.getElementById("imageModal").style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById("imageModal");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        document.getElementById("imageUpload").addEventListener("change", function(event) {
+            const files = event.target.files;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    images.push(e.target.result);
+                    totalPeople += 3; // Assuming 3 people per image
+                    updateImageSection();
+                    updateDashboard();
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        window.onload = () => {
+            totalPeople = images.length * 3; // Initial count based on default image
+            updateImageSection();
+            updateDashboard();
+            setInterval(animateDots, 2000);
+        };
+    </script>
+</body>
+</html>
