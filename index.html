@@ -239,6 +239,11 @@
             border-radius: 50%;
             margin-bottom: 0.5rem;
         }
+        .image-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
         @media (max-width: 600px) {
             .container {
                 padding: 0.5rem;
@@ -282,7 +287,11 @@
         </div>
         
         <div class="card">
-            <h2>Group Photo Analysis</h2>
+            <h2>Photo Analysis</h2>
+            <div class="image-navigation">
+                <button class="upload-btn" onclick="previousImage()">Previous</button>
+                <button class="upload-btn" onclick="nextImage()">Next</button>
+            </div>
             <div id="groupPhoto">
                 <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/all-XNCxHFGEEIEVuoMHdYPrftLnIS5aGa.jpg" alt="Group Photo" id="mainImage">
             </div>
@@ -325,17 +334,20 @@
         const images = [
             "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/all-XNCxHFGEEIEVuoMHdYPrftLnIS5aGa.jpg"
         ];
+        let currentImageIndex = 0;
         let totalPeople = 6; // Initial count based on the actual number of people in the image
         let cameraCount = 1; // Start with 1 for the initial image
 
-        const peopleData = [
-            { name: "Faizan", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Faizan-wCDiNk4JDdsgJ6ZY9NqBa32Z3lxV0s.jpg" },
-            { name: "Tanvi C", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Tanvi%20C-01heeStLyfsF6MaNxDhI5WVWZiB7HP.jpg" },
-            { name: "Tanvi R", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Tanvi%20R-28frqoTAXmn6mGKG0T1bhKNoT1OAIF.jpg" },
-            { name: "Reva", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Reva-HcEY9CHCaHHxHFxUefaLDmlgRIx1S5.jpg" },
-            { name: "Hamza", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Hamza-dLmr2z8xlUYN4eFn1O0DUS9srweogf.jpg" },
-            { name: "Kajol", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Kajol-iC3b9uMVSTHRwTCZdQR5vHMCIalWOv.jpg" }
-        ];
+        const peopleData = {
+            "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/all-XNCxHFGEEIEVuoMHdYPrftLnIS5aGa.jpg": [
+                { name: "Faizan", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Faizan-wCDiNk4JDdsgJ6ZY9NqBa32Z3lxV0s.jpg" },
+                { name: "Tanvi C", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Tanvi%20C-01heeStLyfsF6MaNxDhI5WVWZiB7HP.jpg" },
+                { name: "Tanvi R", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Tanvi%20R-28frqoTAXmn6mGKG0T1bhKNoT1OAIF.jpg" },
+                { name: "Reva", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Reva-HcEY9CHCaHHxHFxUefaLDmlgRIx1S5.jpg" },
+                { name: "Hamza", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Hamza-dLmr2z8xlUYN4eFn1O0DUS9srweogf.jpg" },
+                { name: "Kajol", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Kajol-iC3b9uMVSTHRwTCZdQR5vHMCIalWOv.jpg" }
+            ]
+        };
 
         function updateDashboard() {
             animateValue(document.getElementById("visitorCount"), 0, totalPeople, 1000);
@@ -362,7 +374,7 @@
         function updateImageSection() {
             const imageSection = document.getElementById("imageSection");
             imageSection.innerHTML = '';
-            images.forEach((src, index) => {
+            images.forEach((src,index) => {
                 const container = document.createElement("div");
                 container.className = "image-container";
                 const img = document.createElement("img");
@@ -432,8 +444,10 @@
                     cameraCount++;
                     const img = new Image();
                     img.src = e.target.result;
-                    img.onload = () => simulateVisitorCount(img);
-                    updateImageSection();
+                    img.onload = () => {
+                        simulateVisitorCount(img);
+                        updateImageSection();
+                    }
                 }
                 reader.readAsDataURL(file);
             }
@@ -447,6 +461,9 @@
             const img = document.getElementById('mainImage');
             const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
 
+            const groupPhoto = document.getElementById('groupPhoto');
+            groupPhoto.querySelectorAll('.face-box').forEach(box => box.remove());
+
             detections.forEach((detection, index) => {
                 const box = detection.detection.box;
                 const faceBox = document.createElement('div');
@@ -456,16 +473,22 @@
                 faceBox.style.width = `${box.width}px`;
                 faceBox.style.height = `${box.height}px`;
                 faceBox.onclick = () => showIndividualInfo(index);
-                document.getElementById('groupPhoto').appendChild(faceBox);
+                groupPhoto.appendChild(faceBox);
             });
         }
 
         function showIndividualInfo(index) {
-            const person = peopleData[index];
-            document.getElementById('individualPhoto').src = person.photo;
-            document.getElementById('name').textContent = person.name;
-            document.getElementById('age').textContent = `Age: ${person.age}`;
-            document.getElementById('individualInfo').style.display = 'block';
+            const currentImage = images[currentImageIndex];
+            const currentPeopleData = peopleData[currentImage] || [];
+            const person = currentPeopleData[index];
+            if (person) {
+                document.getElementById('individualPhoto').src = person.photo;
+                document.getElementById('name').textContent = person.name;
+                document.getElementById('age').textContent = `Age: ${person.age}`;
+                document.getElementById('individualInfo').style.display = 'block';
+            } else {
+                document.getElementById('individualInfo').style.display = 'none';
+            }
         }
 
         function showDatabase() {
@@ -473,22 +496,50 @@
             const databaseGrid = document.getElementById('databaseGrid');
             databaseGrid.innerHTML = '';
 
-            peopleData.forEach(person => {
-                const item = document.createElement('div');
-                item.className = 'database-item';
-                item.innerHTML = `
-                    <img src="${person.photo}" alt="${person.name}">
-                    <h3>${person.name}</h3>
-                    <p>Age: ${person.age}</p>
-                `;
-                databaseGrid.appendChild(item);
-            });
+            const currentImage = images[currentImageIndex];
+            const currentPeopleData = peopleData[currentImage] || [];
+
+            if (currentPeopleData.length === 0) {
+                databaseGrid.innerHTML = '<p>No database found for this image.</p>';
+            } else {
+                currentPeopleData.forEach(person => {
+                    const item = document.createElement('div');
+                    item.className = 'database-item';
+                    item.innerHTML = `
+                        <img src="${person.photo}" alt="${person.name}">
+                        <h3>${person.name}</h3>
+                        <p>Age: ${person.age}</p>
+                    `;
+                    databaseGrid.appendChild(item);
+                });
+            }
 
             databaseModal.style.display = 'block';
         }
 
         function closeDatabase() {
             document.getElementById('databaseModal').style.display = 'none';
+        }
+
+        function previousImage() {
+            if (currentImageIndex > 0) {
+                currentImageIndex--;
+                updateMainImage();
+            }
+        }
+
+        function nextImage() {
+            if (currentImageIndex < images.length - 1) {
+                currentImageIndex++;
+                updateMainImage();
+            }
+        }
+
+        function updateMainImage() {
+            const mainImage = document.getElementById('mainImage');
+            mainImage.src = images[currentImageIndex];
+            document.getElementById('individualInfo').style.display = 'none';
+            detectFaces();
         }
 
         window.onload = () => {
