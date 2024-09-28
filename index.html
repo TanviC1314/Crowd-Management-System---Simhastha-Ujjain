@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crowd Management System - Simhastha Ujjain</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/face-api.js/0.22.2/face-api.min.js"></script>
     <style>
         :root {
             --bg-primary: #0a0e17;
@@ -23,39 +24,39 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 1rem;
         }
         header {
             background-color: var(--bg-secondary);
             color: var(--accent);
-            padding: 2rem 0;
+            padding: 1rem 0;
             text-align: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
         }
         h1, h2 {
             margin: 0;
             text-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
         }
         h1 {
-            font-size: 2.5rem;
+            font-size: 2rem;
         }
         h2 {
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
             color: var(--accent);
         }
         .dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
         }
         .card {
             background-color: var(--bg-secondary);
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            padding: 1.5rem;
+            padding: 1rem;
             transition: all 0.3s ease;
         }
         .card:hover {
@@ -63,25 +64,25 @@
             box-shadow: 0 6px 12px rgba(74, 144, 226, 0.2);
         }
         .stats {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: bold;
             color: var(--accent);
             margin: 0.5rem 0;
         }
         .density-map {
             width: 100%;
-            height: 300px;
+            height: 200px;
             background-color: var(--bg-secondary);
             border-radius: 8px;
             position: relative;
             overflow: hidden;
             border: 1px solid var(--accent);
-            margin-top: 1.5rem;
+            margin-top: 1rem;
         }
         .person-dot {
             position: absolute;
-            width: 6px;
-            height: 6px;
+            width: 4px;
+            height: 4px;
             background-color: var(--accent);
             border-radius: 50%;
             opacity: 0.7;
@@ -89,9 +90,9 @@
         }
         .image-section {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1rem;
         }
         .image-container {
             position: relative;
@@ -125,7 +126,8 @@
             display: block;
             width: 80%;
             max-width: 700px;
-            max-height: 80%;
+            max-height: 80vh;
+            object-fit: contain;
             animation: zoom 0.6s;
         }
         @keyframes zoom {
@@ -151,19 +153,111 @@
             display: inline-block;
             background-color: var(--accent);
             color: var(--bg-primary);
-            padding: 0.75rem 1.5rem;
+            padding: 0.5rem 1rem;
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s ease;
             font-weight: bold;
             text-align: center;
-            margin-top: 1rem;
+            margin-top: 0.5rem;
         }
         .upload-btn:hover {
             background-color: #3a7bc8;
         }
         #imageUpload {
             display: none;
+        }
+        .camera-count {
+            font-size: 1rem;
+            color: var(--accent);
+            margin-top: 0.5rem;
+        }
+        #groupPhoto {
+            position: relative;
+            margin-bottom: 1rem;
+            max-width: 100%;
+        }
+        #groupPhoto img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        .face-box {
+            position: absolute;
+            border: 2px solid red;
+            cursor: pointer;
+        }
+        #individualInfo {
+            background-color: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: none;
+            margin-top: 1rem;
+        }
+        #individualPhoto {
+            max-width: 150px;
+            max-height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            display: block;
+            margin: 0 auto 0.5rem;
+        }
+        #databaseModal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9);
+        }
+        .database-content {
+            background-color: var(--bg-secondary);
+            margin: 5% auto;
+            padding: 1rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .database-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+        .database-item {
+            text-align: center;
+        }
+        .database-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 0.5rem;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 0.5rem;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            h2 {
+                font-size: 1.2rem;
+            }
+            .stats {
+                font-size: 1.5rem;
+            }
+            .image-section {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+            .database-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
         }
     </style>
 </head>
@@ -188,12 +282,26 @@
         </div>
         
         <div class="card">
+            <h2>Group Photo Analysis</h2>
+            <div id="groupPhoto">
+                <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/all-XNCxHFGEEIEVuoMHdYPrftLnIS5aGa.jpg" alt="Group Photo" id="mainImage">
+            </div>
+            <div id="individualInfo">
+                <img id="individualPhoto" src="" alt="Individual Photo">
+                <h3 id="name"></h3>
+                <p id="age"></p>
+            </div>
+            <button class="upload-btn" onclick="showDatabase()">Show Database</button>
+        </div>
+
+        <div class="card">
             <h2>Image Analysis</h2>
             <div class="image-section" id="imageSection"></div>
             <input type="file" id="imageUpload" accept="image/*" multiple>
             <label for="imageUpload" class="upload-btn">Upload Images</label>
+            <div class="camera-count" id="cameraCount">Cameras: 0</div>
         </div>
-        <br>
+        
         <div class="card">
             <h2>Crowd Density Map</h2>
             <div class="density-map" id="densityMap"></div>
@@ -205,11 +313,38 @@
         <img class="modal-content" id="modalImage">
     </div>
 
+    <div id="databaseModal" class="modal">
+        <div class="database-content">
+            <span class="close" onclick="closeDatabase()">&times;</span>
+            <h2>Database</h2>
+            <div class="database-grid" id="databaseGrid"></div>
+        </div>
+    </div>
+
     <script>
         const images = [
-            "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-E5e9NaqqpGiQt1lH6d8c5eUTbr1tAQ.png"
+            "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/all-XNCxHFGEEIEVuoMHdYPrftLnIS5aGa.jpg"
         ];
-        let totalPeople = 0;
+        let totalPeople = 6; // Initial count based on the actual number of people in the image
+        let cameraCount = 1; // Start with 1 for the initial image
+
+        const peopleData = [
+            { name: "Faizan", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Faizan-wCDiNk4JDdsgJ6ZY9NqBa32Z3lxV0s.jpg" },
+            { name: "Tanvi C", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Tanvi%20C-01heeStLyfsF6MaNxDhI5WVWZiB7HP.jpg" },
+            { name: "Tanvi R", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Tanvi%20R-28frqoTAXmn6mGKG0T1bhKNoT1OAIF.jpg" },
+            { name: "Reva", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Reva-HcEY9CHCaHHxHFxUefaLDmlgRIx1S5.jpg" },
+            { name: "Hamza", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Hamza-dLmr2z8xlUYN4eFn1O0DUS9srweogf.jpg" },
+            { name: "Kajol", age: 21, photo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Kajol-iC3b9uMVSTHRwTCZdQR5vHMCIalWOv.jpg" }
+        ];
+
+        function updateDashboard() {
+            animateValue(document.getElementById("visitorCount"), 0, totalPeople, 1000);
+            document.getElementById("queueCount").textContent = Math.ceil(totalPeople / 100);
+            document.getElementById("missingCount").textContent = Math.floor(totalPeople * 0.001);
+            document.getElementById("cameraCount").textContent = `Cameras: ${cameraCount}`;
+            
+            updateDensityMap();
+        }
 
         function animateValue(obj, start, end, duration) {
             let startTimestamp = null;
@@ -222,14 +357,6 @@
                 }
             };
             window.requestAnimationFrame(step);
-        }
-
-        function updateDashboard() {
-            document.getElementById("visitorCount").textContent = totalPeople;
-            document.getElementById("queueCount").textContent = Math.ceil(totalPeople / 100);
-            document.getElementById("missingCount").textContent = Math.floor(totalPeople * 0.001);
-            
-            updateDensityMap();
         }
 
         function updateImageSection() {
@@ -287,6 +414,14 @@
             }
         }
 
+        function simulateVisitorCount(img) {
+            // Simulate visitor count based on image size, but ensure at least 5 people per image
+            const baseCount = 5;
+            const additionalCount = Math.floor((img.width * img.height) / 50000);
+            totalPeople += baseCount + additionalCount;
+            updateDashboard();
+        }
+
         document.getElementById("imageUpload").addEventListener("change", function(event) {
             const files = event.target.files;
             for (let i = 0; i < files.length; i++) {
@@ -294,19 +429,73 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     images.push(e.target.result);
-                    totalPeople += 3; // Assuming 3 people per image
+                    cameraCount++;
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => simulateVisitorCount(img);
                     updateImageSection();
-                    updateDashboard();
                 }
                 reader.readAsDataURL(file);
             }
         });
 
+        async function detectFaces() {
+            await faceapi.nets.ssdMobilenetv1.loadFromUri('/models');
+            await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+            await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+
+            const img = document.getElementById('mainImage');
+            const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
+
+            detections.forEach((detection, index) => {
+                const box = detection.detection.box;
+                const faceBox = document.createElement('div');
+                faceBox.className = 'face-box';
+                faceBox.style.left = `${box.x}px`;
+                faceBox.style.top = `${box.y}px`;
+                faceBox.style.width = `${box.width}px`;
+                faceBox.style.height = `${box.height}px`;
+                faceBox.onclick = () => showIndividualInfo(index);
+                document.getElementById('groupPhoto').appendChild(faceBox);
+            });
+        }
+
+        function showIndividualInfo(index) {
+            const person = peopleData[index];
+            document.getElementById('individualPhoto').src = person.photo;
+            document.getElementById('name').textContent = person.name;
+            document.getElementById('age').textContent = `Age: ${person.age}`;
+            document.getElementById('individualInfo').style.display = 'block';
+        }
+
+        function showDatabase() {
+            const databaseModal = document.getElementById('databaseModal');
+            const databaseGrid = document.getElementById('databaseGrid');
+            databaseGrid.innerHTML = '';
+
+            peopleData.forEach(person => {
+                const item = document.createElement('div');
+                item.className = 'database-item';
+                item.innerHTML = `
+                    <img src="${person.photo}" alt="${person.name}">
+                    <h3>${person.name}</h3>
+                    <p>Age: ${person.age}</p>
+                `;
+                databaseGrid.appendChild(item);
+            });
+
+            databaseModal.style.display = 'block';
+        }
+
+        function closeDatabase() {
+            document.getElementById('databaseModal').style.display = 'none';
+        }
+
         window.onload = () => {
-            totalPeople = images.length * 3; // Initial count based on default image
             updateImageSection();
             updateDashboard();
             setInterval(animateDots, 2000);
+            detectFaces();
         };
     </script>
 </body>
